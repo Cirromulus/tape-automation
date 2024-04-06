@@ -11,5 +11,8 @@ See also https://hackaday.io/project/195474-reversing-the-harmankardon-sound-sys
 | HOST PC        |                    |  RP2040  |    EXT Power 19v AC --> | HK Tape Deck  |
 |                |                    |          | <-- HK Onewire Data --> |         -----+
 |    Python lib  | <-- USB Serial --> |  Bridge  | <-- HK Onewire Busy --> |        | TAPE 
- ----------------                      ----------                           -------- ------
+|       vvv      |                     ----------                          |         ------
+|      Soundcard | <-- Audio in  - - - - - - - - - - - - - - - - - - - - - | OUT           |
+|                | --> Audio out - - - - - - - - - - - - - - - - - - - - > | REC           |
+ ----------------                                                           ---------------
 ```
