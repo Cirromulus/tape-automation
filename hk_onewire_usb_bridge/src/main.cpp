@@ -1,5 +1,6 @@
 #include <config.hpp>
 #include <protocol.hpp>
+#include <networkOrder.hpp>
 
 #include <stdio.h>
 #include <array>
@@ -59,9 +60,9 @@ try_read_command()
         if (maybeChar == PICO_ERROR_TIMEOUT)
             return std::nullopt;
 
-        buf |= maybeChar << (p + 8);
+        buf |= maybeChar << (p * 8);
         p++;
     }
     // TODO: NTOH
-    return Command(buf);
+    return Command(swapIfNotNetworkOrder(buf));
 }

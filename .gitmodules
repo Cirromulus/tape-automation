@@ -1,3 +1,5 @@
 [submodule "hk_onewire_usb_bridge/pico-sdk"]
 	path = hk_onewire_usb_bridge/pico-sdk
 	url = https://github.com/raspberrypi/pico-sdk
+[submodule "pio-sdk"]
+	shallow = true
