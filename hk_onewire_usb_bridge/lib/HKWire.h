@@ -5,7 +5,6 @@
 #include <utility>
 #include <array>
 #include <assert.h>
-#include <map>	// until something static memory is available
 
 namespace HKWire
 {
@@ -428,11 +427,4 @@ namespace HKWire
 				return "unknown!";
 		}
 	}
-
-	using IdDescriptionMap = std::map<ID, const char*>;
-	using CommandDescriptionMap = std::map<HKWire::Command, const char*>;
-	using TargetCommandDescriptionMap = std::map<ID, const CommandDescriptionMap&>;
-
-	extern const IdDescriptionMap knownIDs;
-	extern const TargetCommandDescriptionMap knownCommands;
 }

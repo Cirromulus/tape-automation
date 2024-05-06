@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -std=c++17 *.cpp -o host_tester
+g++ -std=c++23 -I ../lib *.cpp -o host_tester

@@ -1,6 +1,7 @@
 #include <config.hpp>
 #include <protocol.hpp>
 #include <networkOrder.hpp>
+#include "HK_io.hpp"
 
 #include <stdio.h>
 #include <array>
@@ -11,17 +12,13 @@
 
 
 std::optional<Command>
-try_read_command();
+try_read_command_from_host();
 
 void
-handleHKWireCommands()
-{
-    while(true)
-    {
-        // TODO
-        break;
-    }
-}
+handleHKWireMessages();
+
+void
+handleUSBCommands();
 
 bool
 isUSBHostConnected()
@@ -33,36 +30,62 @@ int main() {
     setup_default_uart();
     stdio_init_all();
 
-    multicore_launch_core1(handleHKWireCommands);
+    setupGPIO();
 
-    while (true)
-    {
-        // const auto vorher = get_absolute_time();
-        const auto command = try_read_command();
-        if(command)
-        {
-            // TODO
-        }
-    };
+    multicore_launch_core1(handleHKWireMessages);
+
+    handleUSBCommands();
 
     return 0;
 }
 
+void
+handleUSBCommands()
+{
+    while (true)
+    {
+        const auto command = try_read_command_from_host();
+        if(command)
+        {
+            write_message_to_device(command->message);
+        }
+    };
+}
+
+void
+handleHKWireMessages()
+{
+    while(true)
+    {
+        const auto maybeCommand = try_read_message_from_device();
+        if (maybeCommand)
+        {
+            const auto serialized = maybeCommand->getSerialized();
+            const auto serializedNO = swapIfNotNetworkOrder(serialized);
+
+            unsigned p = 0;
+            while (p < sizeof(decltype(serializedNO)))
+            {
+                putchar_raw(serializedNO >> (p * 8) & 0xFF);
+            }
+        }
+    }
+}
+
 std::optional<Command>
-try_read_command()
+try_read_command_from_host()
 {
     SerializedCommand buf = 0;
     unsigned p = 0;
 
     while (p < sizeof(decltype(buf)))
     {
-        auto maybeChar = getchar_timeout_us(1000);    // 1 ms
+        const auto maybeChar = getchar_timeout_us(1000);    // 1 ms
         if (maybeChar == PICO_ERROR_TIMEOUT)
             return std::nullopt;
 
         buf |= maybeChar << (p * 8);
         p++;
     }
-    // TODO: NTOH
-    return Command(swapIfNotNetworkOrder(buf));
+    return Command{HKWire::Payload{swapIfNotNetworkOrder(buf)}};
 }

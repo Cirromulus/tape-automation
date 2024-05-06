@@ -2,5 +2,10 @@
 #include <HKWire.h>
 
 // TODO
-using Command = HKWire::Payload;
-using SerializedCommand = Command::SerializedType;     // TODO
+struct Command
+{
+    // Are more than just the payload needed? this would necessitate a cmd here
+    HKWire::Payload message;
+};
+
+using SerializedCommand = HKWire::Payload::SerializedType;     // TODO
